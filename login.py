@@ -13,16 +13,16 @@ class Test_login(unittest.TestCase):
         browser = self.browser
         browser.maximize_window()
 
-        browser.get("https://kasirdemo.belajarqa.com/")
+        browser.get("https://kasirdemo.belajarqa.com/") #url
         time.sleep(1)
-        browser.find_element(By.ID,"email").send_keys("akunml24@gmail.com")
+        browser.find_element(By.ID,"email").send_keys("akunml24@gmail.com") #input email
         time.sleep(1)
-        browser.find_element(By.ID,"password").send_keys("Akunml24")
+        browser.find_element(By.ID,"password").send_keys("Akunml24") #input password
         time.sleep(1)
-        browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/button").click()
+        browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/button").click() #click login
         time.sleep(2)
 
-        response_message = browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/div[1]/div[1]/div").text
+        response_message = browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/div[1]/div[1]/div").text #validasi
         self.assertIn('hai', response_message)
 
     def test_b_failed_login_empty_email(self):
@@ -72,6 +72,38 @@ class Test_login(unittest.TestCase):
 
         response_message = browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/div[1]").text
         self.assertEqual(response_message,'"password" is not allowed to be empty')
+    
+    def test_e_failed_login_wtih_wrong_password(self):
+        browser = self.browser
+        browser.maximize_window()
+
+        browser.get("https://kasirdemo.belajarqa.com/")
+        time.sleep(1)
+        browser.find_element(By.ID,"email").send_keys("akunml24@gmail.com")
+        time.sleep(1)
+        browser.find_element(By.ID,"password").send_keys('blabla')
+        time.sleep(1)
+        browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/button").click()
+        time.sleep(2)
+
+        response_message = browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/div[1]").text
+        self.assertEqual(response_message,'Kredensial yang Anda berikan salah')
+    
+    def test_f_failed_login_wtih_wrong_email(self):
+        browser = self.browser
+        browser.maximize_window()
+
+        browser.get("https://kasirdemo.belajarqa.com/")
+        time.sleep(1)
+        browser.find_element(By.ID,"email").send_keys("akunl24@gmail.com")
+        time.sleep(1)
+        browser.find_element(By.ID,"password").send_keys('Akunml24')
+        time.sleep(1)
+        browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/button").click()
+        time.sleep(2)
+
+        response_message = browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/div[1]").text
+        self.assertEqual(response_message,'Kredensial yang Anda berikan salah')
 
     
     def tearDown(self):
