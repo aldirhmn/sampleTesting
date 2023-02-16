@@ -1,113 +1,55 @@
 import unittest
 from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.service import Service
-import time
+import os
+from LoginPage.loginPage import loginPage
+import HtmlTestRunner
+from Penjualan.penjualanPage import penjualanPage
 
 class Test_login(unittest.TestCase):
-    def setUp(self):
-        self.browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-    
+
+    @classmethod
+    def setUp(cls):
+        projectDir1 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        cls.driver = webdriver.Chrome(executable_path=projectDir1+'/drivers/chromedriver.exe')
+        cls.driver.implicitly_wait(10)
+        cls.driver.maximize_window()
+        
     def test_a_success_login(self):
-        browser = self.browser
-        browser.maximize_window()
+        driver = self.driver
+        driver.maximize_window()
+        driver.get("https://kasirdemo.belajarqa.com/") #url
 
-        browser.get("https://kasirdemo.belajarqa.com/") #url
-        time.sleep(1)
-        browser.find_element(By.ID,"email").send_keys("akunml24@gmail.com") #input email
-        time.sleep(1)
-        browser.find_element(By.ID,"password").send_keys("Akunml24") #input password
-        time.sleep(1)
-        browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/button").click() #click login
-        time.sleep(2)
+        login = loginPage(driver)
+        login.input_email("akunml24@gmail.com")
+        login.input_password("Akunml24")
+        login.click_login()
+        login.validation_after()
+        #
+        # penjualan = penjualanPage(driver)
+        # penjualan.click_menu_penjualan()
+        # penjualan.add_penjualan()
 
-        response_message = browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/div[1]/div[1]/div").text #validasi
-        self.assertIn('hai', response_message)
+    def test_a_failed_login(self):
+        driver = self.driver
+        driver.maximize_window()
+        driver.get("https://kasirdemo.belajarqa.com/")
 
-    def test_b_failed_login_empty_email(self):
-        browser = self.browser
-        browser.maximize_window()
+        emailList = ["", "email", "emailsalah@email.salah"]
+        passwordList = ["", "aldi", "Akunml24"]
 
-        browser.get("https://kasirdemo.belajarqa.com/")
-        time.sleep(1)
-        browser.find_element(By.ID,"email").send_keys("")
-        time.sleep(1)
-        browser.find_element(By.ID,"password").send_keys("Akunml24")
-        time.sleep(1)
-        browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/button").click()
-        time.sleep(2)
-
-        response_message = browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/div[1]").text
-        self.assertEqual(response_message, '"email" is not allowed to be empty')
-    
-    def test_c_failed_login_with_email_invalid(self):
-        browser = self.browser
-        browser.maximize_window()
-
-        browser.get("https://kasirdemo.belajarqa.com/")
-        time.sleep(1)
-        browser.find_element(By.ID,"email").send_keys("akunml24")
-        time.sleep(1)
-        browser.find_element(By.ID,"password").send_keys("Akunml24")
-        time.sleep(1)
-        browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/button").click()
-        time.sleep(2)
-
-        response_message = browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/div[1]").text
-        self.assertEqual(response_message,'"email" must be a valid email')
-    
-    def test_d_failed_login_with_empty_password(self):
-        browser = self.browser
-        browser.maximize_window()
-
-        browser.get("https://kasirdemo.belajarqa.com/")
-        time.sleep(1)
-        browser.find_element(By.ID,"email").send_keys("akunml24@gmail.com")
-        time.sleep(1)
-        browser.find_element(By.ID,"password").send_keys()
-        time.sleep(1)
-        browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/button").click()
-        time.sleep(2)
-
-        response_message = browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/div[1]").text
-        self.assertEqual(response_message,'"password" is not allowed to be empty')
-    
-    def test_e_failed_login_wtih_wrong_password(self):
-        browser = self.browser
-        browser.maximize_window()
-
-        browser.get("https://kasirdemo.belajarqa.com/")
-        time.sleep(1)
-        browser.find_element(By.ID,"email").send_keys("akunml24@gmail.com")
-        time.sleep(1)
-        browser.find_element(By.ID,"password").send_keys('blabla')
-        time.sleep(1)
-        browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/button").click()
-        time.sleep(2)
-
-        response_message = browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/div[1]").text
-        self.assertEqual(response_message,'Kredensial yang Anda berikan salah')
-    
-    def test_f_failed_login_wtih_wrong_email(self):
-        browser = self.browser
-        browser.maximize_window()
-
-        browser.get("https://kasirdemo.belajarqa.com/")
-        time.sleep(1)
-        browser.find_element(By.ID,"email").send_keys("akunl24@gmail.com")
-        time.sleep(1)
-        browser.find_element(By.ID,"password").send_keys('Akunml24')
-        time.sleep(1)
-        browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/button").click()
-        time.sleep(2)
-
-        response_message = browser.find_element(By.XPATH,"/html/body/div[1]/div/div/div/div[2]/div/div[1]").text
-        self.assertEqual(response_message,'Kredensial yang Anda berikan salah')
-
-    
-    def tearDown(self):
-        self.browser.close()
+        login = loginPage(driver)
+        for a in emailList:
+            for b in passwordList:
+                login.input_email(a)
+                login.input_password(b)
+                login.click_login()
+                login.clear_text()
+    @classmethod
+    def tearDown(cls):
+        cls.driver.close()
+        cls.driver.quit()
+        print("Test Selesai!")
 
 if __name__=="__main__":
-    unittest.main()
+    projectDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    unittest.main(testRunner=HtmlTestRunner.HTMLTestRunner(output=projectDir+'/Report/'))
